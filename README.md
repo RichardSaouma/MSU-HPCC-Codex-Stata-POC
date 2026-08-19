@@ -1,12 +1,12 @@
 # MSU HPCC + Codex + Stata MCP
 
-This standalone repository packages a proof of concept for using OpenAI Codex in VS Code to drive Stata on Michigan State University's HPCC while keeping research data on HPCC. It is intentionally separate from the known-good HPCC reference checkout.
+MSU HPCC is Michigan State University's remote Linux computing system, not a folder on your local computer. This repository is the complete student project. After you connect to HPCC with VS Code Remote-SSH, clone this repository into your HPCC home or approved project space and work in the new folder created by that clone. If an older demonstration folder is already on HPCC, ignore it; you do not need to copy anything from it.
 
-StudentDemo is itself the project root when cloned or copied for student use. Do not nest it inside another repository, copy its .git directory into HPCC, or modify the reference checkout as part of using this scaffold.
+The folder created by cloning this repository is your project folder. Open that folder in the remote VS Code window. Do not put this project inside another project folder or edit an older demonstration folder.
 
-## What this POC proves
+## How the setup works
 
-The verified architecture is:
+The preferred setup is:
 
     Local VS Code
         -> Remote-SSH
@@ -16,9 +16,9 @@ The verified architecture is:
         -> MSU Stata 18-MP
         -> HPCC-resident data
 
-The definitive test used remote Codex and the stata-hpcc MCP server to run stata_run_selection with display 2 + 2. Stata returned 4, and the MCP health response reported stata_available: true.
+The goal is to let remote Codex run Stata commands on HPCC while the code, Stata installation, and research data remain on HPCC.
 
-The development node used during the proof was dev-amd24; it is an example, not a value to hard-code. Heavy production computation should use the appropriate HPCC SLURM allocation.
+For serious computation, use the appropriate HPCC SLURM allocation rather than treating a development node as a production target.
 
 ## Prerequisites
 
@@ -73,7 +73,7 @@ The optional portable VS Code ZIP installation is useful for strict separation f
 
 ## 4. Open and clone the project remotely
 
-Connect to the development node through Remote-SSH, clone this standalone repository in HPCC home or approved project space, and open it in the remote window. Accept the recommended extensions in .vscode/extensions.json. If you already have a separate HPCC POC checkout, keep it separate rather than merging or overwriting files.
+Connect to the development node through Remote-SSH, clone this repository into a new folder in your HPCC home or approved project space, and open that folder in the remote window. Accept the recommended extensions in .vscode/extensions.json. If an older proof-of-concept folder is already on HPCC, leave it alone; do not merge it with this project or overwrite its files.
 
 Remote-SSH is local-side tooling. Codex and Stata MCP must operate in the remote window for the preferred architecture. Do not check extension binaries into Git.
 

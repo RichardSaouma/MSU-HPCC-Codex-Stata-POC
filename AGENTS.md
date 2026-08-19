@@ -1,6 +1,6 @@
 # Agent instructions
 
-This standalone repository packages the verified workflow. It is intentionally separate from the known-good HPCC reference checkout; treat that checkout as read-only reference material.
+MSU HPCC is the remote Linux system used by this project, not a local folder. This repository is the standalone student project. If an older demonstration folder is present on HPCC, leave it unchanged and do not copy files from it into this project.
 
 This repository's root is StudentDemo. Do not nest it inside another repository and do not copy its .git directory into HPCC.
 
