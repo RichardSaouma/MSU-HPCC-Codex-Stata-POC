@@ -1,4 +1,4 @@
-# Copy this to a user-local SSH config and replace the example NetID and local key path.
+# Copy this to your personal SSH config on your computer.
 # Never commit a personalized copy or a private key.
 #
 # A NetID is the part before @msu.edu. For example, the email address
@@ -7,10 +7,10 @@
 Host hpcc-gateway
     HostName hpcc.msu.edu
     User AccountingRocks
-    IdentityFile <LOCAL_PROJECT_DIR>/ssh/hpcc_poc
+    IdentityFile ~/.ssh/msu_hpcc
 
 Host hpcc-dev
     HostName dev-amd24
     User AccountingRocks
-    IdentityFile <LOCAL_PROJECT_DIR>/ssh/hpcc_poc
+    IdentityFile ~/.ssh/msu_hpcc
     ProxyJump hpcc-gateway

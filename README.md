@@ -1,175 +1,350 @@
-# MSU HPCC + Codex + Stata MCP
+# Run Stata on the MSU HPCC with an AI assistant
 
-This project gives you a ready-to-use way to work with Stata on Michigan State University's High Performance Computing Cluster (HPCC) from your own computer. You use [VS Code](https://code.visualstudio.com/download) on your computer as the interface, connect to HPCC, and ask the OpenAI Codex agent in that connection to help you run Stata. This lets you combine your familiar local workflow with HPCC's Stata installation and computing environment.
+This project connects VS Code on your own computer, Stata on Michigan State University's High Performance Computing Cluster (HPCC), and the OpenAI Codex AI assistant. You write in VS Code and ask Codex to run Stata on HPCC. Stata and the Codex tools run on HPCC; you can use data already stored there or upload local data when you need the remote tools to use it.
 
-In everyday use, you will connect to HPCC from VS Code, clone this repository on HPCC, open the new project folder in the connected window, and follow the setup steps.
+You do not need to know Linux to follow the main path. You copy commands from this page into the stated terminal, and two scripts do the technical work.
 
-## How the setup works
+## 1. Before you start
 
-The preferred setup is:
+Complete this checklist before beginning. HPCC and GitHub access can take time to arrange.
 
-    🧩 Local VS Code
-        -> 🔌 Remote-SSH connection inside VS Code
-        -> HPCC gateway
-        -> 🖥️ MSU HPCC development node
-        -> 🤖 remote Codex
-        -> Stata MCP
-        -> MSU Stata 18-MP
-        -> HPCC-resident data
+| You need | Details |
+|---|---|
+| MSU HPCC account | Request one through [ICER](https://docs.icer.msu.edu/). Your instructor may arrange this for you. |
+| MSU NetID | The part of your email before `@msu.edu`. For example, `AccountingRocks@msu.edu` has the NetID `AccountingRocks`. |
+| VS Code | Download it from [code.visualstudio.com](https://code.visualstudio.com/download). |
+| ChatGPT or OpenAI account | Codex needs an account. Ask your instructor which account or plan to use. |
+| GitHub account | It must have access to this private repository. Send your GitHub username to your instructor if you do not have access. |
+| SSH key | Step 4 creates one unless MSU or your instructor already gave you one. |
 
-The goal is to let the Codex agent in the HPCC-connected VS Code window run Stata commands while the code, Stata installation, and research data remain on HPCC.
+Plan about 90 minutes for the first installation. Later, a normal work session takes only a few minutes.
 
-## Prerequisites
+## 2. Three places you will use
 
-You need:
+Every command below has one of these labels. Use the stated place.
 
-- an MSU HPCC account and NetID (the part before `@msu.edu`; for example, `AccountingRocks@msu.edu` has the NetID `AccountingRocks`);
-- permission to use HPCC;
-- local VS Code;
-- an SSH key kept on your local computer.
+| Label | Where to use it |
+|---|---|
+| **[LOCAL SHELL]** | PowerShell on Windows or Terminal on macOS/Linux, on your own computer. |
+| **[LOCAL VS CODE]** | The VS Code application on your own computer. |
+| **[HPCC TERMINAL]** | Terminal > New Terminal inside the VS Code window after it is connected to HPCC. |
 
-This repository provides workspace recommendations, setup and verification scripts, and documentation. It does not contain VS Code, extensions, private keys, credentials, virtual environments, or personal HPCC configuration.
+After step 6, use **[HPCC TERMINAL]** for HPCC commands. Do not run a separate `ssh` session in PowerShell.
 
-## What the files are for
+## 3. How the parts connect
 
-- `README.md`: these instructions.
-- `.vscode/extensions.json`: the extensions VS Code recommends when this project folder is opened.
-- `.vscode/settings.json`: the shared Stata settings for the MSU installation.
-- `scripts/setup-hpcc.sh`: prepares Python, Stata, PyStata, Stata MCP, and remote Codex on HPCC.
-- `scripts/verify-hpcc.sh`: checks that the setup is working and that Stata can calculate `2 + 2`.
-- `ssh/config.example`: a template for your personal SSH connection settings. It contains placeholders only; do not edit and commit it with your personal values.
-- `AGENTS.md`: instructions for Codex when it works on this project.
-- `.gitignore` and `.gitattributes`: keep personal files out of Git and make text files work correctly on Linux and Windows.
+```text
+Your computer                         MSU HPCC
+-------------                         --------
+VS Code
+  -> Remote-SSH extension --------->  gateway (hpcc.msu.edu)
+                                         -> development node (dev-amd24)
+                                              -> Codex assistant
+                                                   -> Stata MCP server
+                                                        -> Stata 18-MP
+```
 
-## 1. Obtain HPCC access
+The gateway is the entry door. The development node is where you work. VS Code connects you to `hpcc-dev`, which passes through the gateway automatically.
 
-Start with the [MSU HPCC connection documentation](https://docs.icer.msu.edu/Connect_to_HPCC_System/). The gateway is hpcc.msu.edu; authenticate with your own MSU NetID.
+## 4. Create your HPCC SSH key
 
-If SSH reports Home directory not found or Could not chdir to home directory, this may be an account-provisioning issue rather than an SSH-key problem.
+An SSH key is a pair of files. The private file stays on your computer. The public file goes to HPCC. Never send the private file to anyone.
 
-Useful references:
+If your instructor or MSU already gave you an HPCC SSH key, skip to step 5.
 
-- [SSH key-based authentication](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/)
-- [VS Code over SSH](https://docs.icer.msu.edu/Connect_over_SSH_with_VS_Code/)
-- [Stata on HPCC](https://docs.icer.msu.edu/Stata/)
-- [Available software](https://docs.icer.msu.edu/available_software/overview/)
-- [Home space](https://docs.icer.msu.edu/Home_Space/)
+**[LOCAL SHELL] — Windows PowerShell. Do not use Administrator PowerShell.**
 
-## 2. Set up your SSH key
+```powershell
+ssh-keygen -t ed25519 -f "$HOME\.ssh\msu_hpcc" -C "MSU HPCC"
+```
 
-If your instructor or MSU has already given you an SSH key, use that key and skip to step 3. Otherwise, keep the private key on your Windows PC and never put it in this repository. Open a **🐢 regular PowerShell window on your PC (not Administrator PowerShell)** and run:
+**[LOCAL SHELL] — macOS or Linux Terminal.**
 
-    ssh-keygen -t ed25519 -f "$HOME\.ssh\msu_hpcc" -C "MSU HPCC"
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/msu_hpcc -C "MSU HPCC"
+```
 
-Install the public key on HPCC as described in the [MSU SSH key instructions](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/). If you already have a key installed, do not repeat this step.
+The command asks for a passphrase and creates two files:
 
-If you want Windows to remember the key passphrase, run these commands in **🐢 regular PowerShell on your PC**:
+- `msu_hpcc` — your private key; it stays on your computer.
+- `msu_hpcc.pub` — your public key; it goes to HPCC.
 
-    Get-Service ssh-agent | Set-Service -StartupType Automatic
-    Start-Service ssh-agent
-    ssh-add "$HOME\.ssh\msu_hpcc"
-    ssh-add -l
+Install the public key on HPCC using the [MSU SSH key instructions](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/). If you already have a key installed, do not repeat this step.
 
-If Windows reports **Access denied** on either service command, close PowerShell, open **🐢 PowerShell as Administrator** from the Windows Start menu, and run only those first two service commands again. Then return to regular PowerShell for `ssh-add` and `ssh-add -l`.
+### Optional: let Windows remember the passphrase
 
-## 3. Configure Remote-SSH
+**[LOCAL SHELL] — regular Windows PowerShell.**
 
-In **🧩 VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **🔌 Remote-SSH: Connect to Host...** command—not a separate `ssh` command in PowerShell—to connect to HPCC. VS Code uses SSH in the background: it first reaches the HPCC gateway, then automatically continues to the development node listed in your SSH configuration. You work on the development node through the terminal inside the Remote-SSH VS Code window; do not run the tools on the gateway or in a separate PowerShell SSH session.
+```powershell
+Get-Service ssh-agent | Set-Service -StartupType Automatic
+Start-Service ssh-agent
+ssh-add "$HOME\.ssh\msu_hpcc"
+ssh-add -l
+```
 
-If VS Code asks for an SSH configuration, copy `ssh/config.example` to your personal SSH configuration. In that copy, replace the example `AccountingRocks` with your own NetID and replace `<LOCAL_PROJECT_DIR>` with the folder containing your local SSH key. The example development node is `dev-amd24`; use a different node only if MSU or your instructor tells you to. This personal configuration stays on your PC and must not be committed to GitHub.
+If Windows shows **Access denied** on either of the first two commands, open **PowerShell as Administrator**, run only those two commands again, then return to regular PowerShell for `ssh-add` and `ssh-add -l`.
 
-You do not need a second or portable copy of VS Code for this project.
+## 5. Write your SSH configuration file
 
-## 4. Open and clone the project remotely
+This file tells VS Code how to reach HPCC. It stays on your computer.
 
-Once the **🔌 Remote-SSH window** is open, continue using **🧩 VS Code on your PC**; the new window is connected to HPCC. From this point forward, do not use PowerShell for HPCC commands. In the remote window, open **🖥️ Terminal > New Terminal**. That terminal is running on the development node, so use it to clone this repository into a new folder in your HPCC home or approved project space. Open the cloned folder in the same remote window.
+Create or open:
 
-In the **🖥️ remote terminal on HPCC**, run:
+- Windows: `C:\Users\<your-name>\.ssh\config`
+- macOS/Linux: `~/.ssh/config`
 
-    git clone https://github.com/RichardSaouma/MSU-HPCC-Codex-Stata-POC.git
-    cd MSU-HPCC-Codex-Stata-POC
+Add this text. Replace `AccountingRocks` with your own NetID in both places.
 
-When the folder opens, VS Code normally displays a notification saying that the workspace has extension recommendations. Click **Install** to install all of them, or click **Show Recommendations** to review them one at a time. If the notification does not appear, open the Extensions view on the left and search for `@recommended`. Install the recommendations while the remote window is active. They are listed in `.vscode/extensions.json`: Codex, Stata MCP, Stata Workbench, Python, and Python Environments.
+```text
+Host hpcc-gateway
+    HostName hpcc.msu.edu
+    User AccountingRocks
+    IdentityFile ~/.ssh/msu_hpcc
 
-The Remote-SSH extension is installed on your PC, but Codex and Stata MCP must run in the remote VS Code window. This keeps Stata and your data on HPCC.
+Host hpcc-dev
+    HostName dev-amd24
+    User AccountingRocks
+    IdentityFile ~/.ssh/msu_hpcc
+    ProxyJump hpcc-gateway
+```
 
-## 5. Run HPCC setup
+`hpcc-gateway` is the door. `hpcc-dev` is the place where you work. Always connect to **hpcc-dev**. The `dev-amd24` name is the class example; use a different development node only if MSU or your instructor tells you to.
 
-In **🖥️ Terminal > New Terminal in the Remote-SSH window**—not in 🐢 PowerShell on your PC—run:
+Never commit this personal configuration file or your private key to GitHub. The repository’s `ssh/config.example` contains the same example for reference after you clone.
 
-    bash scripts/setup-hpcc.sh
+## 6. Connect VS Code to HPCC
 
-The script does the setup for you. It finds Stata, Python, PyStata, the Stata MCP extension, and the Codex extension, then connects them. It is safe to run again if setup needs to be repeated.
+1. **[LOCAL VS CODE]** Install the [Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh).
+2. Press `F1` and choose **Remote-SSH: Connect to Host...**.
+3. Select **hpcc-dev**. Do not select `hpcc-gateway`.
+4. Wait for the new VS Code window to open. The first connection can take several minutes.
 
-If HPCC shows different module names (unlikely; these are the names used by this setup), an instructor can override them. This command also runs in the **Remote-SSH VS Code terminal on HPCC**:
+VS Code makes the SSH connection in the background. Work in the new VS Code window and in its terminal; do not open a separate PowerShell SSH session.
 
-    HPCC_PYTHON_MODULE='<PYTHON_MODULE>' \
-    HPCC_STATA_MODULE='<STATA_MODULE>' \
-    bash scripts/setup-hpcc.sh
+If the connection reports `Home directory not found` or `Could not chdir to home directory`, your HPCC account is not ready. Contact ICER or your instructor; this is usually an account issue, not a key issue.
 
-If VS Code has not finished installing the extensions, wait for installation to finish, then rerun the command.
+## 7. Copy the project to HPCC
 
-## 6. Verify the environment
+This repository is private. HPCC needs a GitHub SSH key to copy it. This key is separate from your HPCC login key.
 
-After installing or reloading the extensions in the remote VS Code window, run this in the **🖥️ remote terminal**, not in 🐢 PowerShell on your PC:
+**[HPCC TERMINAL]** In the new VS Code window, choose **Terminal > New Terminal**, then run:
 
-    bash scripts/verify-hpcc.sh
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/github -C "HPCC GitHub" -N ""
+cat ~/.ssh/github.pub
+```
 
-This checks that the HPCC setup, Stata, Python, and the Stata MCP extension are working.
+Copy the printed line. In a web browser, open [GitHub SSH keys](https://github.com/settings/keys), choose **New SSH key**, and paste the line. Your GitHub account must have access to this private repository.
 
-These are example results printed by the remote terminal:
+**[HPCC TERMINAL]** Tell SSH to use that key for GitHub:
 
-    Stata MCP health: ... "stata_available":true ...
-    Stata smoke test: display 2 + 2 -> 4
-    Stata MCP ready: Stata available: true
+```bash
+printf 'Host github.com\n  IdentityFile ~/.ssh/github\n' >> ~/.ssh/config
+```
 
-The command may show warnings if the Stata MCP extension has not started yet. The setup is ready for the final test only when the health line contains `"stata_available":true`.
+**[HPCC TERMINAL]** Now copy the project:
 
-## 7. Test remote Codex + Stata
+```bash
+git clone git@github.com:RichardSaouma/MSU-HPCC-Codex-Stata-POC.git
+cd MSU-HPCC-Codex-Stata-POC
+```
 
-In the **🔌 Remote-SSH window in VS Code on your PC**, open the **🤖 Codex agent** supplied by the Codex extension. Ask that agent—not a separate local Codex session—to use the Stata MCP server and run:
+If Git reports `Repository not found`, your GitHub account does not have access yet. Send your GitHub username to your instructor.
 
-    display 2 + 2
+Open the new folder in the same VS Code window: choose **File > Open Folder**, then select `MSU-HPCC-Codex-Stata-POC`.
 
-The result should be 4. You do not need to configure an MCP URL or forward a port on your PC.
+## 8. Install the recommended extensions
+
+VS Code normally displays a notification saying the workspace has extension recommendations. Click **Install** to install all recommendations, or **Show Recommendations** to review them one at a time. If no notification appears, open Extensions and search for `@recommended`.
+
+Install these extensions in the **remote VS Code window**, not the local window:
+
+- Codex — `openai.chatgpt`
+- Stata MCP — `deepecon.stata-mcp`
+- Stata Workbench — `tmonk.stata-workbench`
+- Python — `ms-python.python`
+- Python Environments — `ms-python.vscode-python-envs`
+
+The Remote-SSH extension belongs on your computer. The extensions above belong on HPCC. Look for **Install in SSH: hpcc-dev** on an extension page.
+
+## 9. Sign in to Codex
+
+**[LOCAL VS CODE]** In the remote VS Code window, open the Codex panel and sign in with your ChatGPT or OpenAI account.
+
+The sign-in page opens in a browser on your computer. Complete sign-in there, then return to the remote VS Code window. Do not paste an API key, password, or token into this repository or into any command here.
+
+## 10. Run the setup script
+
+**[HPCC TERMINAL]**
+
+```bash
+bash scripts/setup-hpcc.sh
+```
+
+The script finds Stata, Python, PyStata, the Stata MCP extension, and Codex, then connects them. It is safe to run again. If extensions are still installing, wait and run the command again.
+
+If HPCC uses different module names (unlikely; these names were used by the validated setup), an instructor can override them:
+
+**[HPCC TERMINAL]**
+
+```bash
+HPCC_PYTHON_MODULE='<PYTHON_MODULE>' HPCC_STATA_MODULE='<STATA_MODULE>' bash scripts/setup-hpcc.sh
+```
+
+## 11. Check the setup
+
+**[HPCC TERMINAL]**
+
+```bash
+bash scripts/verify-hpcc.sh
+```
+
+A correct result contains lines like these:
+
+```text
+PASS: Stata module and executable found: ...
+PASS: PyStata is visible to the MCP environment
+PASS: remote Codex has stata-hpcc registered
+PASS: Stata MCP health: ... "stata_available":true ...
+PASS: Stata smoke test: display 2 + 2 -> 4
+
+Stata MCP ready: Stata available: true
+```
+
+The final line is the important one. Continue only when you see `Stata available: true`. Warnings can appear while the Stata MCP extension is still starting; wait briefly and run the check again.
+
+## 12. Test Codex with Stata
+
+**[LOCAL VS CODE]** In the VS Code window connected to HPCC, open the Codex panel. This is the Codex agent operating on HPCC, not a separate local Codex session.
+
+Ask Codex:
+
+```text
+Use the stata-hpcc MCP server and run: display 2 + 2
+```
+
+Codex should use `stata_run_selection`, and Stata should return `4`. You do not need to configure an MCP URL or forward a port on your computer.
+
+## Your normal work session
+
+After the first setup:
+
+1. Start VS Code on your computer.
+2. Choose **Remote-SSH: Connect to Host... > hpcc-dev**.
+3. Open the project folder on HPCC.
+4. Open the Codex panel and give it work.
+
+Run `bash scripts/setup-hpcc.sh` again in the **[HPCC TERMINAL]** after the Codex or Stata MCP extension is updated, after MSU changes the Python or Stata modules, or when verification tells you to rerun setup.
+
+## Rules and limits
+
+- Development nodes are for setup and small tests. Ask your instructor before using this workflow for long or resource-heavy work.
+- You can use data stored on your computer or data already on HPCC. Local files are not automatically visible to Stata on HPCC; upload or copy them to HPCC before asking remote Codex or Stata to use them.
+- Follow your course and research requirements for where data may be stored.
+- Never commit a private key, password, token, or personal SSH configuration to GitHub.
 
 ## Troubleshooting
 
-### Verification says `Stata available: false` or the MCP health endpoint is not running
+### The check says `Stata available: false`
 
-This means the lower-level setup may be present, but the Stata MCP extension is not running or cannot reach Stata. In the remote VS Code window, reload or activate the Stata MCP extension, then rerun `bash scripts/verify-hpcc.sh`. Continue only when the health response contains `"stata_available":true`.
+The Stata MCP extension is not running or cannot reach Stata. In the remote VS Code window, use `F1 > Developer: Reload Window`, wait briefly, then run:
 
-### Setup or verification reports `No module named pystata` or `No module named stata_setup`
+**[HPCC TERMINAL]**
 
-The MCP Python environment cannot see MSU's PyStata utilities. From the remote VS Code terminal, rerun `bash scripts/setup-hpcc.sh`; it installs `stata-setup` in the MCP environment and creates the path file that points to the MSU Stata utilities.
+```bash
+bash scripts/verify-hpcc.sh
+```
 
-### PyStata reports `libpython3.11.so.1.0` is missing
+### `No module named pystata` or `No module named stata_setup`
 
-The matching Python module is not loaded in the remote terminal. Run this in the **Remote-SSH VS Code terminal on HPCC**:
+The MCP Python environment cannot see the MSU PyStata files.
 
-    module purge
-    module load Python/3.11.3-GCCcore-12.3.0
+**[HPCC TERMINAL]**
 
-### Setup says the remote Codex command was not found
+```bash
+bash scripts/setup-hpcc.sh
+```
 
-The Codex extension is not installed or has not finished starting in the remote VS Code window. Install or reload the Codex extension there, then rerun `bash scripts/setup-hpcc.sh`. Do not install a separate Codex package with `apt`; the setup script finds the binary bundled with the remote VS Code extension. It also finds the installed Stata MCP extension without requiring a hard-coded extension version.
+### `uv is required to install stata-setup`
 
-### Remote-SSH hangs, fails to open the remote window, or reports a Node `navigator` error
+The Stata MCP extension did not finish installing its private Python environment. In the remote VS Code window, open Extensions, remove `deepecon.stata-mcp`, install it again, wait for installation to finish, then rerun setup.
 
-Update VS Code and the Remote - SSH and Codex extensions on your PC, disconnect, and reconnect to HPCC. If the error persists, check the MSU [VS Code over SSH instructions](https://docs.icer.msu.edu/Connect_over_SSH_with_VS_Code/) and confirm that you are connecting to a development node rather than trying to run the remote tools on the gateway.
+### `libpython3.11.so.1.0` is missing
 
-## Working with local or HPCC data
+The matching Python module is not loaded in the HPCC terminal.
 
-You can work with data stored on your PC, or with data stored in your HPCC home or approved project space. In the preferred workflow, the Codex agent, Stata MCP, and Stata can access HPCC files directly. Files on your PC are not automatically visible in the remote session; upload or copy them to HPCC when you want the remote tools to use them. Keep research data wherever your course or research requirements allow.
+**[HPCC TERMINAL]**
 
-## Appendix A: Local Codex + forwarded remote MCP
+```bash
+module purge
+module load Python/3.11.3-GCCcore-12.3.0
+```
 
-The local-Codex fallback was also proven, but is not the recommended student workflow. It requires forwarding remote port 4000 to a local port, checking the forwarded health endpoint, and configuring local Codex with the assigned local MCP URL. This adds networking and process-location concepts without improving data locality.
+### `Remote Codex binary not found`
 
-Use it only when remote Codex is unavailable, and never expose the MCP endpoint beyond the intended local/SSH boundary.
+The Codex extension is not installed in the remote VS Code window or has not started. Install it there, open the Codex panel once, and rerun setup. Do not install Codex with `apt`.
 
-## Further references
+### The Stata MCP address is already in use
 
-- [Codex/VS Code guide](https://claesbackman.com/codex-vscode-guide.html)
+Another process on the development node may already be using port 4000.
+
+**[HPCC TERMINAL]**
+
+```bash
+ss -ltnp | grep 4000
+```
+
+If the process is not yours, ask your instructor for a different port. The same port must be used by the Stata MCP extension and the setup script. The setup script accepts a different port like this:
+
+**[HPCC TERMINAL]**
+
+```bash
+STATA_MCP_PORT=4137 bash scripts/setup-hpcc.sh
+```
+
+### Stata is not found even though the module loaded
+
+MSU may have moved the Stata installation. Compare the `Stata root:` line printed by setup with the path in `.vscode/settings.json`. Ask your instructor before changing the shared setting.
+
+### Remote-SSH hangs or reports a Node `navigator` error
+
+Update VS Code and the Remote-SSH and Codex extensions on your computer. Disconnect and reconnect to `hpcc-dev`, not `hpcc-gateway`. If the problem continues, check the [MSU VS Code over SSH instructions](https://docs.icer.msu.edu/Connect_over_SSH_with_VS_Code/).
+
+## What is in this repository
+
+| File | Purpose |
+|---|---|
+| `README.md` | These instructions. |
+| `scripts/setup-hpcc.sh` | Prepares Python, Stata, PyStata, Stata MCP, and Codex on HPCC. |
+| `scripts/verify-hpcc.sh` | Checks the setup and makes Stata calculate `2 + 2`. |
+| `ssh/config.example` | A copy of the example SSH configuration from step 5. |
+| `.vscode/extensions.json` | The recommended remote VS Code extensions. |
+| `.vscode/settings.json` | The Stata path and edition setting. |
+| `AGENTS.md` | Instructions for Codex when it changes this project. |
+| `.gitignore`, `.gitattributes` | Keep personal files out of Git and keep text compatible across systems. |
+
+## Short glossary
+
+- **HPCC:** MSU's shared high-performance computing system.
+- **NetID:** The part of your MSU email address before `@msu.edu`.
+- **SSH:** The secure connection method used by Remote-SSH.
+- **Gateway:** The HPCC entry point. You pass through it; you do not work there.
+- **Development node:** The HPCC computer where this project runs.
+- **MCP:** The connection that lets Codex operate Stata.
+- **PyStata:** The Python interface used by the Stata MCP server.
+- **Health check:** A quick status check that reports whether Stata is available.
+
+## Appendix: local Codex fallback
+
+The preferred workflow uses Codex in the Remote-SSH VS Code window. A local Codex session with a forwarded remote MCP server is a fallback only. It requires port forwarding and separate local MCP configuration, so use it only when remote Codex cannot run.
+
+## Further information
+
+- [MSU HPCC connection guide](https://docs.icer.msu.edu/Connect_to_HPCC_System/)
+- [SSH key authentication](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/)
+- [VS Code over SSH](https://docs.icer.msu.edu/Connect_over_SSH_with_VS_Code/)
+- [Stata on HPCC](https://docs.icer.msu.edu/Stata/)
+- [Home space](https://docs.icer.msu.edu/Home_Space/)
+- [Codex and VS Code guide](https://claesbackman.com/codex-vscode-guide.html)
 - [OpenEcon Stata MCP](https://openecon.ai/projects/stata-mcp)
 - [Stata MCP repository](https://github.com/hanlulong/stata-mcp)
