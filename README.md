@@ -42,7 +42,7 @@ Useful references:
 - [SSH key-based authentication](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/)
 - [VS Code over SSH](https://docs.icer.msu.edu/Connect_over_SSH_with_VS_Code/)
 - [Stata on HPCC](https://docs.icer.msu.edu/Stata/)
-- [Available software](https://docs.icer.msu.edu/available_software/)
+- [Available software](https://docs.icer.msu.edu/available_software/overview/)
 - [Home space](https://docs.icer.msu.edu/Home_Space/)
 
 ## 2. Create a dedicated SSH key
