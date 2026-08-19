@@ -1,6 +1,6 @@
 # Agent instructions
 
-MSU HPCC is the remote Linux system used by this project, not a local folder. This repository is the standalone student project. If an older demonstration folder is present on HPCC, leave it unchanged and do not copy files from it into this project.
+MSU HPCC is the remote Linux system used by this project, not a local folder. This repository is the standalone student project.
 
 This repository's root is StudentDemo. Do not nest it inside another repository and do not copy its .git directory into HPCC.
 

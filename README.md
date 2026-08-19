@@ -2,22 +2,24 @@
 
 This project gives you a ready-to-use way to work with Stata on Michigan State University's High Performance Computing Cluster (HPCC) from your own computer. You use VS Code on your computer as the interface, connect to HPCC, and ask the OpenAI Codex agent in that connection to help you run Stata. This lets you combine your familiar local workflow with HPCC's Stata installation and computing environment.
 
-In everyday use, you will connect to HPCC from VS Code, open this project in the connected window, and follow the setup steps. The project folder is created when you clone this repository on HPCC. If an older demonstration folder is already there, ignore it; it is not part of this project and you do not need to copy anything from it.
+In everyday use, you will connect to HPCC from VS Code, clone this repository on HPCC, open the new project folder in the connected window, and follow the setup steps.
 
 ### Where each thing runs
 
-- **PowerShell:** a Windows command window on your PC. Use it for local SSH-key commands.
-- **VS Code:** the one VS Code application installed on your PC.
-- **Remote-SSH window:** a window of that same local VS Code application after it connects to HPCC. Its terminal, project files, Codex agent, Stata MCP extension, Stata, and data are on HPCC. You do not install or run a separate VS Code application on HPCC.
+- 🪟 **PowerShell on your PC:** a Windows command window. Use it for local SSH-key commands.
+- 🧩 **VS Code on your PC:** the one VS Code application you install and run.
+- 🔌 **Remote-SSH window:** a window of that same local VS Code application after it connects to HPCC.
+- 🖥️ **Remote terminal on HPCC:** the terminal inside the Remote-SSH window. Its project files, Codex agent, Stata MCP extension, Stata, and data are on HPCC. You do not install or run a separate VS Code application on HPCC.
+- 🤖 **Codex agent:** the Codex panel inside the Remote-SSH window that uses Stata MCP to run Stata.
 
 ## How the setup works
 
 The preferred setup is:
 
-    Local VS Code
-        -> Remote-SSH
-        -> MSU HPCC development node
-        -> remote Codex
+    🧩 Local VS Code
+        -> 🔌 Remote-SSH
+        -> 🖥️ MSU HPCC development node
+        -> 🤖 remote Codex
         -> Stata MCP
         -> MSU Stata 18-MP
         -> HPCC-resident data
@@ -62,13 +64,13 @@ Useful references:
 
 ## 2. Set up your SSH key
 
-If your instructor or MSU has already given you an SSH key, use that key and skip to step 3. Otherwise, keep the private key on your Windows PC and never put it in this repository. Open **PowerShell on your PC** and run:
+If your instructor or MSU has already given you an SSH key, use that key and skip to step 3. Otherwise, keep the private key on your Windows PC and never put it in this repository. Open **🪟 PowerShell on your PC** and run:
 
     ssh-keygen -t ed25519 -f "$HOME\.ssh\msu_hpcc" -C "MSU HPCC"
 
 Install the public key on HPCC as described in the [MSU SSH key instructions](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/). If you already have a key installed, do not repeat this step.
 
-If you want Windows to remember the key passphrase, run these commands in **PowerShell on your PC**:
+If you want Windows to remember the key passphrase, run these commands in **🪟 PowerShell on your PC**:
 
     Get-Service ssh-agent | Set-Service -StartupType Automatic
     Start-Service ssh-agent
@@ -77,7 +79,7 @@ If you want Windows to remember the key passphrase, run these commands in **Powe
 
 ## 3. Configure Remote-SSH
 
-In **VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **Remote-SSH: Connect to Host...** command to connect to HPCC. Connect onward to a development node when prompted; do not run the tools on the gateway.
+In **🧩 VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **🔌 Remote-SSH: Connect to Host...** command to connect to HPCC. Connect onward to a development node when prompted; do not run the tools on the gateway.
 
 If VS Code asks for an SSH configuration, copy `ssh/config.example` to your personal SSH configuration. In that copy, replace the example `AccountingRocks` with your own NetID and replace `<LOCAL_PROJECT_DIR>` with the folder containing your local SSH key. The example development node is `dev-amd24`; use a different node only if MSU or your instructor tells you to. This personal configuration stays on your PC and must not be committed to GitHub.
 
@@ -85,20 +87,20 @@ You do not need a second or portable copy of VS Code for this project.
 
 ## 4. Open and clone the project remotely
 
-Once the Remote-SSH connection is open, continue using **VS Code on your PC**; the new window is simply connected to HPCC. In that remote window, open **Terminal > New Terminal**. That terminal is running on HPCC, so use it to clone this repository into a new folder in your HPCC home or approved project space. Open the cloned folder in the same remote window.
+Once the **🔌 Remote-SSH window** is open, continue using **🧩 VS Code on your PC**; the new window is connected to HPCC. In that remote window, open **🖥️ Terminal > New Terminal**. That terminal is running on HPCC, so use it to clone this repository into a new folder in your HPCC home or approved project space. Open the cloned folder in the same remote window.
 
-In that **remote terminal on HPCC**, run:
+In the **🖥️ remote terminal on HPCC**, run:
 
     git clone https://github.com/RichardSaouma/MSU-HPCC-Codex-Stata-POC.git
     cd MSU-HPCC-Codex-Stata-POC
 
-When the folder opens, VS Code normally displays a notification saying that the workspace has extension recommendations. Click **Install** to install all of them, or click **Show Recommendations** to review them one at a time. If the notification does not appear, open the Extensions view on the left and search for `@recommended`. Install the recommendations while the remote window is active. They are listed in `.vscode/extensions.json`: Codex, Stata MCP, Stata Workbench, Python, and Python Environments. If an older demonstration folder is already on HPCC, leave it alone.
+When the folder opens, VS Code normally displays a notification saying that the workspace has extension recommendations. Click **Install** to install all of them, or click **Show Recommendations** to review them one at a time. If the notification does not appear, open the Extensions view on the left and search for `@recommended`. Install the recommendations while the remote window is active. They are listed in `.vscode/extensions.json`: Codex, Stata MCP, Stata Workbench, Python, and Python Environments.
 
 The Remote-SSH extension is installed on your PC, but Codex and Stata MCP must run in the remote VS Code window. This keeps Stata and your data on HPCC.
 
 ## 5. Run HPCC setup
 
-In **Terminal > New Terminal in the Remote-SSH window**—not in PowerShell on your PC—run:
+In **🖥️ Terminal > New Terminal in the Remote-SSH window**—not in PowerShell on your PC—run:
 
     bash scripts/setup-hpcc.sh
 
@@ -114,7 +116,7 @@ If VS Code has not finished installing the extensions, wait for installation to 
 
 ## 6. Verify the environment
 
-After installing or reloading the extensions in the remote VS Code window, run this in **that remote window's terminal**, not in PowerShell on your PC:
+After installing or reloading the extensions in the remote VS Code window, run this in the **🖥️ remote terminal**, not in PowerShell on your PC:
 
     bash scripts/verify-hpcc.sh
 
@@ -130,7 +132,7 @@ The command may show warnings if the Stata MCP extension has not started yet. Th
 
 ## 7. Test remote Codex + Stata
 
-In the **VS Code window on your PC that is connected to HPCC through Remote-SSH**, open the **Codex agent** supplied by the Codex extension. Ask that agent—not a separate local Codex session—to use the Stata MCP server and run:
+In the **🔌 Remote-SSH window in VS Code on your PC**, open the **🤖 Codex agent** supplied by the Codex extension. Ask that agent—not a separate local Codex session—to use the Stata MCP server and run:
 
     display 2 + 2
 
