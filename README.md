@@ -4,14 +4,6 @@ This project gives you a ready-to-use way to work with Stata on Michigan State U
 
 In everyday use, you will connect to HPCC from VS Code, clone this repository on HPCC, open the new project folder in the connected window, and follow the setup steps.
 
-### Where each thing runs
-
-- 🪟 **PowerShell on your PC:** a Windows command window. Use it for local SSH-key commands.
-- 🧩 **VS Code on your PC:** the one VS Code application you install and run.
-- 🔌 **Remote-SSH window:** a window of that same local VS Code application after it connects to HPCC.
-- 🖥️ **Remote terminal on HPCC:** the terminal inside the Remote-SSH window. Its project files, Codex agent, Stata MCP extension, Stata, and data are on HPCC. You do not install or run a separate VS Code application on HPCC.
-- 🤖 **Codex agent:** the Codex panel inside the Remote-SSH window that uses Stata MCP to run Stata.
-
 ## How the setup works
 
 The preferred setup is:
@@ -64,18 +56,20 @@ Useful references:
 
 ## 2. Set up your SSH key
 
-If your instructor or MSU has already given you an SSH key, use that key and skip to step 3. Otherwise, keep the private key on your Windows PC and never put it in this repository. Open **🪟 PowerShell on your PC** and run:
+If your instructor or MSU has already given you an SSH key, use that key and skip to step 3. Otherwise, keep the private key on your Windows PC and never put it in this repository. Open a **regular PowerShell window on your PC (not Administrator PowerShell)** and run:
 
     ssh-keygen -t ed25519 -f "$HOME\.ssh\msu_hpcc" -C "MSU HPCC"
 
 Install the public key on HPCC as described in the [MSU SSH key instructions](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/). If you already have a key installed, do not repeat this step.
 
-If you want Windows to remember the key passphrase, run these commands in **🪟 PowerShell on your PC**:
+If you want Windows to remember the key passphrase, run these commands in **regular PowerShell on your PC**:
 
     Get-Service ssh-agent | Set-Service -StartupType Automatic
     Start-Service ssh-agent
     ssh-add "$HOME\.ssh\msu_hpcc"
     ssh-add -l
+
+If Windows reports **Access denied** on either service command, close PowerShell, open **PowerShell as Administrator** from the Windows Start menu, and run only those first two service commands again. Then return to regular PowerShell for `ssh-add` and `ssh-add -l`.
 
 ## 3. Configure Remote-SSH
 
