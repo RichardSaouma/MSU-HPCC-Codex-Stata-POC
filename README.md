@@ -1,8 +1,8 @@
 # MSU HPCC + Codex + Stata MCP
 
-MSU HPCC is Michigan State University's remote Linux computer system, not a folder on your local computer. You use VS Code on your PC to connect to it. After connecting, clone this repository into your HPCC home or approved project space and work in the new folder created by that clone. If an older demonstration folder is already on HPCC, ignore it; you do not need to copy anything from it.
+This project gives you a ready-to-use way to work with Stata on Michigan State University's High Performance Computing Cluster (HPCC) from your own computer. You use VS Code on your computer as the interface, connect to HPCC, and ask the OpenAI Codex agent in that connection to help you run Stata. This lets you combine your familiar local workflow with HPCC's Stata installation and computing environment.
 
-The folder created by cloning this repository is your project folder. Open that folder in the VS Code window connected to HPCC. Do not put this project inside another project folder or edit an older demonstration folder.
+In everyday use, you will connect to HPCC from VS Code, open this project in the connected window, and follow the setup steps. The project folder is created when you clone this repository on HPCC. If an older demonstration folder is already there, ignore it; it is not part of this project and you do not need to copy anything from it.
 
 ### Where each thing runs
 
