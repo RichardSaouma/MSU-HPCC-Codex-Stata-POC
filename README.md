@@ -9,7 +9,8 @@ In everyday use, you will connect to HPCC from VS Code, clone this repository on
 The preferred setup is:
 
     🧩 Local VS Code
-        -> 🔌 Remote-SSH
+        -> 🔌 Remote-SSH connection
+        -> HPCC gateway
         -> 🖥️ MSU HPCC development node
         -> 🤖 remote Codex
         -> Stata MCP
@@ -73,7 +74,7 @@ If Windows reports **Access denied** on either service command, close PowerShell
 
 ## 3. Configure Remote-SSH
 
-In **🧩 VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **🔌 Remote-SSH: Connect to Host...** command to connect to HPCC. Connect onward to a development node when prompted; do not run the tools on the gateway.
+In **🧩 VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **🔌 Remote-SSH: Connect to Host...** command to connect to HPCC. SSH first reaches the HPCC gateway, then automatically continues to the development node listed in your SSH configuration. You work on the development node; do not run the tools on the gateway.
 
 If VS Code asks for an SSH configuration, copy `ssh/config.example` to your personal SSH configuration. In that copy, replace the example `AccountingRocks` with your own NetID and replace `<LOCAL_PROJECT_DIR>` with the folder containing your local SSH key. The example development node is `dev-amd24`; use a different node only if MSU or your instructor tells you to. This personal configuration stays on your PC and must not be committed to GitHub.
 
