@@ -18,8 +18,6 @@ The preferred setup is:
 
 The goal is to let remote Codex run Stata commands on HPCC while the code, Stata installation, and research data remain on HPCC.
 
-For serious computation, use the appropriate HPCC SLURM allocation rather than treating a development node as a production target.
-
 ## Prerequisites
 
 You provide:
