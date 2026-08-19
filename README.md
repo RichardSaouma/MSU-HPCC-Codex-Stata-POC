@@ -161,9 +161,9 @@ The Codex extension is not installed or has not finished starting in the remote 
 
 Update VS Code and the Remote - SSH and Codex extensions on your PC, disconnect, and reconnect to HPCC. If the error persists, check the MSU [VS Code over SSH instructions](https://docs.icer.msu.edu/Connect_over_SSH_with_VS_Code/) and confirm that you are connecting to a development node rather than trying to run the remote tools on the gateway.
 
-## Working with HPCC-resident data
+## Working with local or HPCC data
 
-Keep research data on HPCC and use paths in your HPCC home or approved project space. The local VS Code client is only the interface; remote Codex, the MCP server, Stata, and data remain on HPCC in the preferred workflow.
+You can work with data stored on your PC, or with data stored in your HPCC home or approved project space. In the preferred workflow, the Codex agent, Stata MCP, and Stata can access HPCC files directly. Files on your PC are not automatically visible in the remote session; upload or copy them to HPCC when you want the remote tools to use them. Keep research data wherever your course or research requirements allow.
 
 ## Appendix A: Local Codex + forwarded remote MCP
 
