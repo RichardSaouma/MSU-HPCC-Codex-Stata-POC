@@ -14,7 +14,7 @@ Keep the remote HPCC workflow primary. The local-Codex/forwarded-MCP workflow be
 
 - Never commit SSH private keys, credentials, tokens, virtual environments, or personal configuration.
 - Do not modify production VS Code, Claude, Stata, or global SSH configuration.
-- Use placeholders and environment variables for NetID, hostnames, project accounts, and paths.
+- Use the documentation examples `AccountingRocks` for a NetID and `dev-amd24` for a development node only when explaining the setup. Never commit a user's real NetID, credentials, or personal paths.
 - Never submit SLURM jobs from setup or verification scripts.
 
 ## Implementation rules

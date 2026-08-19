@@ -28,7 +28,7 @@ The goal is to let the Codex agent in the HPCC-connected VS Code window run Stat
 
 You need:
 
-- an MSU HPCC account and NetID;
+- an MSU HPCC account and NetID (the part before `@msu.edu`; for example, `AccountingRocks@msu.edu` has the NetID `AccountingRocks`);
 - permission to use HPCC;
 - local VS Code;
 - an SSH key kept on your local computer.
@@ -79,7 +79,7 @@ If you want Windows to remember the key passphrase, run these commands in **Powe
 
 In **VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **Remote-SSH: Connect to Host...** command to connect to HPCC. Connect onward to a development node when prompted; do not run the tools on the gateway.
 
-If VS Code asks for an SSH configuration, copy `ssh/config.example` to your personal SSH configuration, replace the three placeholder values, and select the resulting HPCC host in VS Code. This personal configuration stays on your PC and must not be committed to GitHub.
+If VS Code asks for an SSH configuration, copy `ssh/config.example` to your personal SSH configuration. In that copy, replace the example `AccountingRocks` with your own NetID and replace `<LOCAL_PROJECT_DIR>` with the folder containing your local SSH key. The example development node is `dev-amd24`; use a different node only if MSU or your instructor tells you to. This personal configuration stays on your PC and must not be committed to GitHub.
 
 You do not need a second or portable copy of VS Code for this project.
 
