@@ -1,6 +1,6 @@
 # MSU HPCC + Codex + Stata MCP
 
-This project gives you a ready-to-use way to work with Stata on Michigan State University's High Performance Computing Cluster (HPCC) from your own computer. You use VS Code on your computer as the interface, connect to HPCC, and ask the OpenAI Codex agent in that connection to help you run Stata. This lets you combine your familiar local workflow with HPCC's Stata installation and computing environment.
+This project gives you a ready-to-use way to work with Stata on Michigan State University's High Performance Computing Cluster (HPCC) from your own computer. You use [VS Code](https://code.visualstudio.com/download) on your computer as the interface, connect to HPCC, and ask the OpenAI Codex agent in that connection to help you run Stata. This lets you combine your familiar local workflow with HPCC's Stata installation and computing environment.
 
 In everyday use, you will connect to HPCC from VS Code, clone this repository on HPCC, open the new project folder in the connected window, and follow the setup steps.
 
