@@ -104,7 +104,7 @@ In **Terminal > New Terminal in the Remote-SSH window**—not in PowerShell on y
 
 The script does the setup for you. It finds Stata, Python, PyStata, the Stata MCP extension, and the Codex extension, then connects them. It is safe to run again if setup needs to be repeated.
 
-If HPCC shows different module names (unlikely; these are the names used by this setup), an instructor can override them with:
+If HPCC shows different module names (unlikely; these are the names used by this setup), an instructor can override them. This command also runs in the **Remote-SSH VS Code terminal on HPCC**:
 
     HPCC_PYTHON_MODULE='<PYTHON_MODULE>' \
     HPCC_STATA_MODULE='<STATA_MODULE>' \
@@ -120,7 +120,7 @@ After installing or reloading the extensions in the remote VS Code window, run t
 
 This checks that the HPCC setup, Stata, Python, and the Stata MCP extension are working.
 
-Expected results include:
+These are example results printed by the remote terminal:
 
     Stata MCP health: ... "stata_available":true ...
     Stata smoke test: display 2 + 2 -> 4
@@ -148,7 +148,7 @@ The MCP Python environment cannot see MSU's PyStata utilities. From the remote V
 
 ### PyStata reports `libpython3.11.so.1.0` is missing
 
-The matching Python module is not loaded in the remote terminal. Run:
+The matching Python module is not loaded in the remote terminal. Run this in the **Remote-SSH VS Code terminal on HPCC**:
 
     module purge
     module load Python/3.11.3-GCCcore-12.3.0
