@@ -9,7 +9,7 @@ In everyday use, you will connect to HPCC from VS Code, clone this repository on
 The preferred setup is:
 
     🧩 Local VS Code
-        -> 🔌 Remote-SSH connection
+        -> 🔌 Remote-SSH connection inside VS Code
         -> HPCC gateway
         -> 🖥️ MSU HPCC development node
         -> 🤖 remote Codex
@@ -74,7 +74,7 @@ If Windows reports **Access denied** on either service command, close PowerShell
 
 ## 3. Configure Remote-SSH
 
-In **🧩 VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **🔌 Remote-SSH: Connect to Host...** command to connect to HPCC. SSH first reaches the HPCC gateway, then automatically continues to the development node listed in your SSH configuration. You work on the development node; do not run the tools on the gateway.
+In **🧩 VS Code on your PC**, install the [Microsoft Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh). Use VS Code's **🔌 Remote-SSH: Connect to Host...** command—not a separate `ssh` command in PowerShell—to connect to HPCC. VS Code uses SSH in the background: it first reaches the HPCC gateway, then automatically continues to the development node listed in your SSH configuration. You work on the development node through the terminal inside the Remote-SSH VS Code window; do not run the tools on the gateway or in a separate PowerShell SSH session.
 
 If VS Code asks for an SSH configuration, copy `ssh/config.example` to your personal SSH configuration. In that copy, replace the example `AccountingRocks` with your own NetID and replace `<LOCAL_PROJECT_DIR>` with the folder containing your local SSH key. The example development node is `dev-amd24`; use a different node only if MSU or your instructor tells you to. This personal configuration stays on your PC and must not be committed to GitHub.
 
@@ -82,7 +82,7 @@ You do not need a second or portable copy of VS Code for this project.
 
 ## 4. Open and clone the project remotely
 
-Once the **🔌 Remote-SSH window** is open, continue using **🧩 VS Code on your PC**; the new window is connected to HPCC. In that remote window, open **🖥️ Terminal > New Terminal**. That terminal is running on HPCC, so use it to clone this repository into a new folder in your HPCC home or approved project space. Open the cloned folder in the same remote window.
+Once the **🔌 Remote-SSH window** is open, continue using **🧩 VS Code on your PC**; the new window is connected to HPCC. From this point forward, do not use PowerShell for HPCC commands. In the remote window, open **🖥️ Terminal > New Terminal**. That terminal is running on the development node, so use it to clone this repository into a new folder in your HPCC home or approved project space. Open the cloned folder in the same remote window.
 
 In the **🖥️ remote terminal on HPCC**, run:
 
