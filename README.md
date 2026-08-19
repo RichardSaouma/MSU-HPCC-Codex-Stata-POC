@@ -56,20 +56,20 @@ Useful references:
 
 ## 2. Set up your SSH key
 
-If your instructor or MSU has already given you an SSH key, use that key and skip to step 3. Otherwise, keep the private key on your Windows PC and never put it in this repository. Open a **regular PowerShell window on your PC (not Administrator PowerShell)** and run:
+If your instructor or MSU has already given you an SSH key, use that key and skip to step 3. Otherwise, keep the private key on your Windows PC and never put it in this repository. Open a **🐢 regular PowerShell window on your PC (not Administrator PowerShell)** and run:
 
     ssh-keygen -t ed25519 -f "$HOME\.ssh\msu_hpcc" -C "MSU HPCC"
 
 Install the public key on HPCC as described in the [MSU SSH key instructions](https://docs.icer.msu.edu/SSH_Key-Based_Authentication/). If you already have a key installed, do not repeat this step.
 
-If you want Windows to remember the key passphrase, run these commands in **regular PowerShell on your PC**:
+If you want Windows to remember the key passphrase, run these commands in **🐢 regular PowerShell on your PC**:
 
     Get-Service ssh-agent | Set-Service -StartupType Automatic
     Start-Service ssh-agent
     ssh-add "$HOME\.ssh\msu_hpcc"
     ssh-add -l
 
-If Windows reports **Access denied** on either service command, close PowerShell, open **PowerShell as Administrator** from the Windows Start menu, and run only those first two service commands again. Then return to regular PowerShell for `ssh-add` and `ssh-add -l`.
+If Windows reports **Access denied** on either service command, close PowerShell, open **🐢 PowerShell as Administrator** from the Windows Start menu, and run only those first two service commands again. Then return to regular PowerShell for `ssh-add` and `ssh-add -l`.
 
 ## 3. Configure Remote-SSH
 
@@ -94,7 +94,7 @@ The Remote-SSH extension is installed on your PC, but Codex and Stata MCP must r
 
 ## 5. Run HPCC setup
 
-In **🖥️ Terminal > New Terminal in the Remote-SSH window**—not in PowerShell on your PC—run:
+In **🖥️ Terminal > New Terminal in the Remote-SSH window**—not in 🐢 PowerShell on your PC—run:
 
     bash scripts/setup-hpcc.sh
 
@@ -110,7 +110,7 @@ If VS Code has not finished installing the extensions, wait for installation to 
 
 ## 6. Verify the environment
 
-After installing or reloading the extensions in the remote VS Code window, run this in the **🖥️ remote terminal**, not in PowerShell on your PC:
+After installing or reloading the extensions in the remote VS Code window, run this in the **🖥️ remote terminal**, not in 🐢 PowerShell on your PC:
 
     bash scripts/verify-hpcc.sh
 
