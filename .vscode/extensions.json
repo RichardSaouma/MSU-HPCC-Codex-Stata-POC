@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ms-vscode-remote.remote-ssh",
+    "openai.chatgpt",
+    "deepecon.stata-mcp",
+    "tmonk.stata-workbench",
+    "ms-python.python",
+    "ms-python.vscode-python-envs"
+  ]
+}

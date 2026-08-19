@@ -1,0 +1,13 @@
+# Copy this to a user-local SSH config and replace the placeholders.
+# Never commit a personalized copy or a private key.
+
+Host hpcc-gateway
+    HostName hpcc.msu.edu
+    User <MSU_NETID>
+    IdentityFile <LOCAL_PROJECT_DIR>/ssh/hpcc_poc
+
+Host hpcc-dev
+    HostName <HPCC_DEV_NODE>
+    User <MSU_NETID>
+    IdentityFile <LOCAL_PROJECT_DIR>/ssh/hpcc_poc
+    ProxyJump hpcc-gateway
