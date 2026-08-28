@@ -348,3 +348,26 @@ The preferred workflow uses Codex in the Remote-SSH VS Code window. A local Code
 - [Codex and VS Code guide](https://claesbackman.com/codex-vscode-guide.html)
 - [OpenEcon Stata MCP](https://openecon.ai/projects/stata-mcp)
 - [Stata MCP repository](https://github.com/hanlulong/stata-mcp)
+
+## Codex Skill: stata-hpcc
+
+This repository ships a Codex skill at `.agents/skills/stata-hpcc/`. Codex reads
+skills from the repository automatically, so it is active after `git clone` with
+no installation step.
+
+The skill teaches Codex the MSU-specific parts of this setup:
+
+- **Verify session ownership before writing.** On a shared development node the
+  MCP server can attach to another user's Stata session; the skill checks
+  `c(pwd)` and stops if the username is not the current user's.
+- **Absolute paths.** Output goes to a full path under `/mnt/home/<netid>/`
+  rather than wherever the server's working directory happens to be.
+- **Back up and log before editing.** Existing do-files are copied to
+  `.backups/` and recorded in `logs/file-changes.log`. Regenerable outputs
+  (tables, figures, logs) are exempt.
+- **SLURM for heavy jobs.** Long or memory-hungry work gets an `sbatch` script
+  rather than running on the shared development node.
+
+It defers to the `stata-*` skills shipped with `mcp-stata` for econometric
+technique, and covers only the HPCC environment.
+
