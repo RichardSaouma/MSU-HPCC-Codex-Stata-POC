@@ -367,6 +367,11 @@ The skill teaches Codex the MSU-specific parts of this setup:
   (tables, figures, logs) are exempt.
 - **SLURM for heavy jobs.** Long or memory-hungry work gets an `sbatch` script
   rather than running on the shared development node.
+- **Look up syntax instead of guessing.** Stata ships its full manuals as PDFs
+  inside the installation. The skill points Codex at them and shows how to
+  search with `pdfgrep` or `pdfplumber`, extracting only the pages it needs
+  rather than loading thousands of pages into context. `help` first, PDFs
+  second.
 
 It defers to the `stata-*` skills shipped with `mcp-stata` for econometric
 technique, and covers only the HPCC environment.
