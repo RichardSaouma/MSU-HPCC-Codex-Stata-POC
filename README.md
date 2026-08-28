@@ -114,6 +114,8 @@ Never commit this personal configuration file or your private key to GitHub. The
 
 ## 6. Connect VS Code to HPCC
 
+Opening VS Code does not itself connect it to HPCC. In the VS Code window, complete the steps below.
+
 1. **[LOCAL VS CODE]** Install the [Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh).
 2. Press `F1` and choose **Remote-SSH: Connect to Host...**.
 3. Select **hpcc-dev**. Do not select `hpcc-gateway`.
