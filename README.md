@@ -348,3 +348,23 @@ The preferred workflow uses Codex in the Remote-SSH VS Code window. A local Code
 - [Codex and VS Code guide](https://claesbackman.com/codex-vscode-guide.html)
 - [OpenEcon Stata MCP](https://openecon.ai/projects/stata-mcp)
 - [Stata MCP repository](https://github.com/hanlulong/stata-mcp)
+
+## Codex Skill: kinney-paragraphs
+
+A second repository-level skill at `.agents/skills/kinney-paragraphs/`, active on
+clone like the Stata one.
+
+It produces a Kinney Three Paragraph document for an empirical accounting
+research idea - What / Why / How, predictive-validity tables, and outcome risks -
+following Kinney, W. R. (2019), *Accounting Horizons* 33(4), 1-14. The intended
+use is before any data work begins: formalizing a new idea, stress-testing an
+existing one, or preparing for a workshop.
+
+The skill is deliberately critical rather than encouraging. Its value is in the
+stop signs, so it is instructed to mark them honestly and to recommend revision
+or abandonment when the operationalization will not hold up.
+
+Note this one is not HPCC-specific - it would work in any Codex project. It is
+included here because this repo is where accounting PhD students meet Codex, but
+it belongs equally well in a separate skills repository.
+
