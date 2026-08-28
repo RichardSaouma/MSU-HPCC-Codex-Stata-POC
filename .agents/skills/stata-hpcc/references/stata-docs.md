@@ -1,72 +1,99 @@
 # Looking up Stata syntax without guessing
 
-Stata ships its complete manuals as PDFs inside the installation. Grep them
-instead of inventing option names.
+## Try `help` first
 
-## Find the manuals
+Stata's own help is faster than anything else and costs almost nothing. Run it
+through `stata_run_selection`:
 
-```bash
-module load Stata/18-MP
-STATA_ROOT=$(dirname "$(which stata-mp)")
-ls "$STATA_ROOT"/docs/*.pdf 2>/dev/null || find "$STATA_ROOT" -name "*.pdf" | head -40
-```
+    help regress
+    help regress##options
+    help xtreg
+    search heteroskedasticity
 
-Typical set: `r.pdf` (base reference), `xt.pdf` (panel data), `te.pdf`
-(treatment effects), `ts.pdf` (time series), `p.pdf` (programming),
-`d.pdf` (data management), `u.pdf` (user's guide).
+For user-written commands, `help` works once the package is installed, and
+`which <command>` tells you whether it is:
 
-## Search them cheaply
+    which reghdfe
+    ssc describe reghdfe
 
-`pdfgrep` if available — it searches PDFs directly and prints page numbers:
+If a command is not installed, say so rather than writing code that will fail.
 
-```bash
-pdfgrep -n -i "absorb(" "$STATA_ROOT"/docs/*.pdf | head -20
-```
+Go to the PDF manuals only when `help` is too terse - worked examples, the
+formula behind an estimator, methodological discussion.
 
-If `pdfgrep` is not installed, use Python:
+## The manuals on MSU HPCC
 
-```bash
-python3 - <<'PY'
-import glob, sys
-import pdfplumber          # pip install --user pdfplumber if missing
-term = "cluster("
-for path in glob.glob("/path/to/docs/*.pdf"):
-    with pdfplumber.open(path) as pdf:
-        for i, page in enumerate(pdf.pages, 1):
-            text = page.extract_text() or ""
-            if term in text:
-                print(f"{path} p.{i}")
-PY
-```
+Confirmed present, Stata 18-MP:
 
-**Extract only the pages you need.** Never load an entire manual into context —
-these are thousands of pages. Find the page number first, then pull that page
-and its neighbours.
+    /opt/software-current/2023.06/x86_64/generic/software/Stata/18-MP/docs/
 
-## Faster options first
+Discover the path rather than hardcoding it, in case the module version changes:
 
-Before reaching for the PDFs, try Stata itself — it is quicker and costs almost
-nothing:
+    module load Stata/18-MP
+    STATA_DOCS="$(dirname "$(readlink -f "$(which stata-mp)")")/docs"
+    ls "$STATA_DOCS"/*.pdf
 
-```stata
-help regress
-help regress##options
-search heteroskedasticity
-```
+The ones worth knowing:
 
-Run these through `stata_run_selection` and read the output.
+| File | Manual |
+|---|---|
+| `r.pdf` | Base Reference - most commands live here |
+| `causal.pdf` | Causal Inference and Treatment-Effects |
+| `xt.pdf` | Longitudinal / Panel Data |
+| `d.pdf` | Data Management |
+| `u.pdf` | User's Guide |
+| `p.pdf` | Programming |
+| `ts.pdf` | Time Series |
+| `sem.pdf` | Structural Equation Modeling |
+| `lasso.pdf` | Lasso |
+| `meta.pdf` | Meta-Analysis |
+| `g.pdf` | Graphics |
 
-## For user-written commands
+## Searching them: use `pdftotext`
 
-`ssc` packages carry their own help files:
+**`pdfgrep` and `pdfplumber` are NOT installed on MSU HPCC.** Do not try them.
+`pdftotext` (poppler) is at `/usr/bin/pdftotext` and does the job.
 
-```stata
-help reghdfe
-ssc describe reghdfe
-```
+### Find the page
 
-If a command is not installed, say so rather than writing code that will fail:
+`pdftotext` writes a form feed between pages, so treating it as awk's record
+separator makes `NR` the page number:
 
-```stata
-which reghdfe
-```
+    pdftotext "$STATA_DOCS/r.pdf" - | awk -v RS='\f' '/vce\(robust\)/{print NR}' | head
+
+### Read only that page
+
+    pdftotext -f 412 -l 414 "$STATA_DOCS/r.pdf" -
+
+Always pass `-f` and `-l`. **Never extract a whole manual** - these run to
+thousands of pages and will flood the context for no benefit.
+
+### Case-insensitive search
+
+    pdftotext "$STATA_DOCS/causal.pdf" - | awk -v RS='\f' 'tolower($0) ~ /difference-in-differences/{print NR}' | head
+
+### Search several manuals at once
+
+    for f in "$STATA_DOCS"/{r,causal,xt}.pdf; do
+      echo "== $(basename "$f")"
+      pdftotext "$f" - | awk -v RS='\f' '/hdfe/{print NR}' | head -5
+    done
+
+## Workflow
+
+1. `help <command>` - usually enough.
+2. Still unclear -> pick the right manual from the table above.
+3. Find candidate pages with the awk one-liner.
+4. Extract that page plus one either side with `-f`/`-l`.
+5. Quote what you found and name the manual and page, so the user can check it.
+
+## If you want richer extraction
+
+`pdfplumber` handles tables better than `pdftotext`. It is not installed, but a
+user-level install works on the dev node:
+
+    module load Python/3.11.3-GCCcore-12.3.0
+    pip install --user pdfplumber
+
+Do not install it unprompted. `pdftotext` is sufficient for syntax lookup, and
+adding packages to someone's environment is their decision.
